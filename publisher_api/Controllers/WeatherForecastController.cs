@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using publisher_api.Services;
 
 namespace publisher_api.Controllers
 {
@@ -16,14 +17,14 @@ namespace publisher_api.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-    private readonly ILogger<WeatherForecastController> _logger;
+    private readonly IMessageService _messageService;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    public WeatherForecastController(IMessageService messageService)
     {
-      _logger = logger;
+        _messageService = messageService;
     }
 
-    [HttpGet]
+        [HttpGet]
     public IEnumerable<WeatherForecast> Get()
     {
       var rng = new Random();
@@ -37,10 +38,11 @@ namespace publisher_api.Controllers
     }
 
     [HttpPost]
-    public IActionResult Post([FromBody] string payload)
+    public void Post([FromBody] string payload)
     {
-      return Ok("{\"success\": \"true\"}");
+        Console.WriteLine("received a Post: " + payload);
+        _messageService.Enqueue(payload);
     }
 
-  }
+    }
 }
